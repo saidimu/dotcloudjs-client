@@ -1,0 +1,29 @@
+define(['jquery', 'jq-cookie'], function($) {
+    var result = {
+        host: /**HOST**/,
+        stackid: /**STACKID**/
+    };
+
+    var readyCb = null, isReady = false;
+
+    result.ready = function(cb) {
+        readyCb = cb;
+        if (isReady) {
+            readyCb(result);
+        }
+    };
+
+    $.post(result.host + '/rpc/newdb', {
+        stackid: result.stackid
+    }, function(data) {
+        if (data.error) throw data.error;
+        if (!data.result || !data.result.id)
+            throw 'Backend didn\'t respond with a DB id';
+        result.dbid = data.result.id;
+        if (readyCb)
+            readyCb(self);
+        isReady = true;
+    });
+
+    return result;
+});
