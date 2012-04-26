@@ -11,9 +11,9 @@ var fs = require('fs'),
 var DEFAULT_CONFIG = {
     paths: {
         "jquery": "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min",
-        "dotcloud": "http://jslib-dotcloud-labs.dotcloud.com/dotcloud",
-        "jq-cookie": "http://jslib-dotcloud-labs.dotcloud.com/jq-cookie",
-        "config": "http://jslib-dotcloud-labs.dotcloud.com/config"
+        "dotcloud": "http://jslib.dotcloud.com/dotcloud",
+        "jq-cookie": "http://jslib.dotcloud.com/jq-cookie",
+        "config": "http://jslib.dotcloud.com/config"
     }
 };
 

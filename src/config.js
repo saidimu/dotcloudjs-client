@@ -7,7 +7,7 @@
  */
 define(['jquery', 'jq-cookie'], function($) {
     var result = {};
-    result.host = 'http://jslib1-dotcloud-labs.dotcloud.com';
+    result.host = 'http://api.jslib.dotcloud.com';
     var readyCb = null, isReady = false, fiddleid = null;
 
     result.ready = function(cb) {
