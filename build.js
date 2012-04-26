@@ -33,50 +33,50 @@ function read_json(path) {
 }
 
 function usage() {
-    console.error('Usage: node build.js [[-s STACK_VARS] -f require_config.json]');
+    console.error('Usage: node build.js build_dir [[-s STACK_VARS] -f require_config.json]');
 }
 
-function build(cfg_obj) {
+function build(dir, cfg_obj) {
     var requirejs_content = fs.readFileSync('./libraries/require.js', 'utf-8');
-    fs.mkdirSync('./build');
-    fs.writeFileSync('./build/dotcloud-require.js', requirejs_content + 
+    fs.mkdirSync(dir);
+    fs.writeFileSync(dir + '/dotcloud-require.js', requirejs_content + 
         conf_string(cfg_obj));
 }
 
-function copy_src_files() {
-    copy('./src/dotcloud.js', './build/dotcloud.js');
-    copy('./libraries/jq-cookie.js', './build/jq-cookie.js');
+function copy_src_files(dst) {
+    copy('./src/dotcloud.js', dst + '/dotcloud.js');
+    copy('./libraries/jq-cookie.js', dst + '/jq-cookie.js');
 }
 
-if (argc === 2) { // No additional arguments, default build
-    build(DEFAULT_CONFIG);
-} else if (process.argv[2] == '-f' && argc === 4) {
-    var cfg = read_json(fs.readFileSync(process.argv[3]));
+if (argc === 3) { // No additional arguments, default build
+    build(process.argv[2], DEFAULT_CONFIG);
+} else if (process.argv[3] == '-f' && argc === 5) {
+    var cfg = read_json(fs.readFileSync(process.argv[4]));
     if (!cfg) 
         process.exit(1);
     else
-        build(cfg);
-} else if (process.argv[2] == '-s' && argc >= 4) {
-    if (argc === 4) {
-        build({ paths: { jquery: DEFAULT_CONFIG.paths.jquery }});
-    } else if (process.argv[4] == '-f' && argc >= 6) {
-        var cfg = read_json(fs.readFileSync(process.argv[5]));
+        build(process.argv[2], cfg);
+} else if (process.argv[3] == '-s' && argc >= 5) {
+    if (argc === 5) {
+        build(process.argv[2], { paths: { jquery: DEFAULT_CONFIG.paths.jquery }});
+    } else if (process.argv[5] == '-f' && argc >= 7) {
+        var cfg = read_json(fs.readFileSync(process.argv[6]));
         if (!cfg)
             process.exit(1);
         else
-            build(cfg);
+            build(process.argv[2], cfg);
     } else {
         usage();
         process.exit(1);
     }
-    copy_src_files();
+    copy_src_files(process.argv[2]);
     var configjs = fs.readFileSync('./src/config.js.TMPL', 'utf-8');
-    var config_vars = JSON.parse(process.argv[3]);
+    var config_vars = JSON.parse(process.argv[4]);
     for (var k in config_vars) {
-        var tmpl_key = '/**' + k.toUpperCase() + '**/';
-        configjs = configjs.replace(tmpl_key, '"' + config_vars[k] + '"');
+        var tmpl_key = new RegExp('\\/\\*\\*' + k.toUpperCase() + '\\*\\*\\/', 'g');
+        configjs = configjs.replace(tmpl_key, config_vars[k]);
     }
-    fs.writeFileSync('./build/config.js', configjs);
+    fs.writeFileSync(process.argv[2] + '/config.js', configjs);
 } else {
     usage();
     process.exit(1);
