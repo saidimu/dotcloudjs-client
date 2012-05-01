@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>dotcloud.js by dotcloud</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>dotcloud.js</h1>
+        <p>Extend your Javascript Application with Powerful Cloud Services</p>
+        <p class="view"><a href="https://github.com/dotcloud/dotcloudjs-client">View the Project on GitHub <small>dotcloud/dotcloudjs-client</small></a></p>
+        <ul>
+          <li><a href="https://github.com/dotcloud/dotcloudjs-client/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/dotcloud/dotcloudjs-client/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/dotcloud/dotcloudjs-client">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>dotcloud.js</h2>
+
+<p>dotcloud.js is a Javascript library which lets you interact with powerful backend services directly from the browser, in just a few lines of code. For example, here's how to store data on a database:</p>
+
+<pre><code>dotcloud.db.insert('todo', {
+      description: 'Learn how to play foosball',
+      priority: 'high'
+});
+</code></pre>
+
+<p>Here's how to retrieve data back from the database:</p>
+
+<pre><code>dotcloud.db.find('todo',
+{priority: 'high'}, function (data) { /* ... */ });
+</code></pre>
+
+<h3>Support or Contact</h3>
+
+<p>dotcloud.js is a work in progress, and we would love to get your feedback. Check out the documentation at <a href="http://js.dotcloud.com/doc.html">http://js.dotcloud.com/doc.html</a> or contact us <a href="mailto:labs+js@dotcloud.com">labs+js@dotcloud.com</a>.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/dotcloud">dotcloud</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
