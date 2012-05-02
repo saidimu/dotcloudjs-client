@@ -44,15 +44,15 @@ function usage() {
 }
 
 function build(dir, cfg_obj) {
-    var requirejs_content = fs.readFileSync('./libraries/require.js', 'utf-8');
+    var requirejs_content = fs.readFileSync(__dirname + '/libraries/require.js', 'utf-8');
     fs.mkdirSync(dir);
     fs.writeFileSync(dir + '/dotcloud-require.js', requirejs_content + 
         conf_string(cfg_obj));
 }
 
 function copy_src_files(dst) {
-    copy('./src/dotcloud.js', dst + '/dotcloud.js');
-    copy('./libraries/jq-cookie.js', dst + '/jq-cookie.js');
+    copy(__dirname + '/src/dotcloud.js', dst + '/dotcloud.js');
+    copy(__dirname + '/libraries/jq-cookie.js', dst + '/jq-cookie.js');
 }
 
 if (argc === 3) { // No additional arguments, default build
@@ -78,7 +78,7 @@ if (argc === 3) { // No additional arguments, default build
         process.exit(1);
     }
     copy_src_files(process.argv[2]);
-    var configjs = fs.readFileSync('./src/config.js.TMPL', 'utf-8');
+    var configjs = fs.readFileSync(__dirname + '/src/config.js.TMPL', 'utf-8');
     var config_vars = JSON.parse(process.argv[4]);
     for (var k in config_vars) {
         var tmpl_key = new RegExp('\\/\\*\\*' + k.toUpperCase() + '\\*\\*\\/', 'g');
