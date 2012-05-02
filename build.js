@@ -29,10 +29,10 @@ function copy(src, dst, cb) {
     util.pump(is, os, cb);
 }
 
-function read_json(path) {
+function read_json(data) {
     var contents = null;
     try {
-        contents = JSON.parse(fs.readFileSync(process.argv[3], 'utf-8'));
+        contents = JSON.parse(data);
     } catch (e) {
         console.error('File should obey the JSON format.', e);
     }
@@ -59,7 +59,7 @@ if (argc === 3) { // No additional arguments, default build
     build(process.argv[2], DEFAULT_CONFIG);
 } else if (process.argv[3] == '-f' && argc === 5) {
     var cfg = read_json(fs.readFileSync(process.argv[4]));
-    if (!cfg) 
+    if (!cfg)
         process.exit(1);
     else
         build(process.argv[2], cfg);
@@ -67,6 +67,7 @@ if (argc === 3) { // No additional arguments, default build
     if (argc === 5) {
         build(process.argv[2], { paths: { jquery: DEFAULT_CONFIG.paths.jquery }});
     } else if (process.argv[5] == '-f' && argc >= 7) {
+        console.log(process.argv[6]);
         var cfg = read_json(fs.readFileSync(process.argv[6]));
         if (!cfg)
             process.exit(1);
