@@ -55,6 +55,7 @@ function copy_src_files(dst) {
     copy(__dirname + '/src/dotcloud.js', dst + '/dotcloud.js');
     copy(__dirname + '/src/db.js', dst + '/db.js');
     copy(__dirname + '/src/sync.js', dst + '/sync.js');
+    copy(__dirname + '/libraries/jq-cookie.js', dst + '/jq-cookie.js');
 }
 
 if (argc === 3) { // No additional arguments, default build

@@ -1,0 +1,63 @@
+/**
+ * dotcloud.js, a Javascript gateway library to powerful cloud services.
+ * Copyright 2012 DotCloud Inc (Joffrey Fuhrer <joffrey@dotcloud.com>))
+ *
+ * This project is free software released under the MIT license:
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+define(['jquery', 'jq-cookie'], function($) {
+    var readyCb = [], isReady = false, fiddleid = null;
+    var result = {
+        host: "${host}",
+        {{if stackid}}stackid: "${stackid}",
+        {{/if}}modules: {
+        {{each(i, val) submodules}}
+            ${$item.enabled(val)}: true{{if i != submodules.length - 1}},{{/if}}
+        {{/each}}}
+    };
+
+    function ready() {
+        var i = readyCb.length;
+        while (--i >= 0) {
+            readyCb[i](result);
+        }
+        isReady = true;
+    }
+
+    result.ready = function(cb) {
+        if (isReady) {
+            return cb(result);
+        }
+        readyCb.push(cb);
+    };
+
+{{if stackid}}
+    $.post(result.host + '/rpc/newdb', {
+        stackid: result.stackid
+    }, function(data) {
+        if (data.error) throw data.error;
+        if (!data.result || !data.result.id)
+            throw 'Backend didn\'t respond with a DB id';
+{{else}}
+    var cookieId = $.cookie('dotcloud_tmp_stack') || undefined;
+    if (cookieId && !fiddleid) {
+        result.dbid = $.cookie('dotcloud_tmp_stack');
+        ready();
+    } else {
+        $.post(result.host + '/rpc/newdb', {
+            fiddleid: fiddleid,
+            dbid: cookieId
+        }, function(data) {
+            if (data.error) throw data.error;
+            if (!data.result || !data.result.id)
+                throw 'Backend didn\'t respond with a DB id';
+            if (!fiddleid)
+                $.cookie('dotcloud_tmp_stack', data.result.id, { expires: 9001, path: '/' });
+{{/if}}
+            result.dbid = data.result.id;
+            ready();
+        });
+    }
+
+    return result;
+});
