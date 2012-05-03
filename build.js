@@ -6,7 +6,8 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 var fs = require('fs'),
-    util = require('util');
+    util = require('util'),
+    jqtpl = require('jqtpl');
 
 var DEFAULT_CONFIG = {
     paths: {
@@ -52,7 +53,8 @@ function build(dir, cfg_obj) {
 
 function copy_src_files(dst) {
     copy(__dirname + '/src/dotcloud.js', dst + '/dotcloud.js');
-    copy(__dirname + '/libraries/jq-cookie.js', dst + '/jq-cookie.js');
+    copy(__dirname + '/src/db.js', dst + '/db.js');
+    copy(__dirname + '/src/sync.js', dst + '/sync.js');
 }
 
 if (argc === 3) { // No additional arguments, default build
@@ -67,7 +69,6 @@ if (argc === 3) { // No additional arguments, default build
     if (argc === 5) {
         build(process.argv[2], { paths: { jquery: DEFAULT_CONFIG.paths.jquery }});
     } else if (process.argv[5] == '-f' && argc >= 7) {
-        console.log(process.argv[6]);
         var cfg = read_json(fs.readFileSync(process.argv[6]));
         if (!cfg)
             process.exit(1);
@@ -78,12 +79,13 @@ if (argc === 3) { // No additional arguments, default build
         process.exit(1);
     }
     copy_src_files(process.argv[2]);
-    var configjs = fs.readFileSync(__dirname + '/src/config.js.TMPL', 'utf-8');
+    var configjs = fs.readFileSync(__dirname + '/src/config.js.jqtpl', 'utf-8');
     var config_vars = JSON.parse(process.argv[4]);
-    for (var k in config_vars) {
-        var tmpl_key = new RegExp('\\/\\*\\*' + k.toUpperCase() + '\\*\\*\\/', 'g');
-        configjs = configjs.replace(tmpl_key, config_vars[k]);
-    }
+    var configjs = jqtpl.tmpl(configjs, config_vars, {
+        enabled: function(module) {
+            return module.toUpperCase() + '_ENABLED';
+        }
+    });
     fs.writeFileSync(process.argv[2] + '/config.js', configjs);
 } else {
     usage();
