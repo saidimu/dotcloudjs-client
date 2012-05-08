@@ -33,12 +33,16 @@ define(function(require) {
             fn(self);
     };
 
+    // The dotcloud object is a namespace to several submodules loaded dynamically.  
+    // Each submodule is documented on its own page.
     config.ready(function(config) {
         if (config.modules.DB_ENABLED) {
+            // * [dotcloud.db](db.html) &mdash; Simple storage API
             self.db = require('db')(config);
         }
 
         if (config.modules.SYNC_ENABLED) {
+            // * [dotcloud.sync](sync.html) &mdash; Synchronized storage API
             self.sync = require('sync')(config);
         }
 
