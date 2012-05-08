@@ -81,7 +81,7 @@ if (argc === 3) { // No additional arguments, default build
     }
     copy_src_files(process.argv[2]);
     var configjs = fs.readFileSync(__dirname + '/src/config.js.jqtpl', 'utf-8');
-    var config_vars = JSON.parse(process.argv[4]);
+    var config_vars = JSON.parse(fs.readFileSync(process.argv[4]));
     var configjs = jqtpl.tmpl(configjs, config_vars, {
         enabled: function(module) {
             return module.toUpperCase() + '_ENABLED';
