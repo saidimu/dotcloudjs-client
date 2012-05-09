@@ -39,6 +39,18 @@ define(['jquery', 'jq-cookie'], function($) {
         if (!data.result || !data.result.id)
             throw 'Backend didn\'t respond with a DB id';
 {{else}}
+    // JsFiddle specific, try to extract fiddle-id.
+    if (document.referrer) {
+        var urlParts = document.referrer.split('/');
+        if (urlParts[2] == 'jsfiddle.net' && urlParts.length >= 4) {
+            if (urlParts.length == 4 || urlParts[4] === '') // No username
+                fiddleid = urlParts[3] || undefined;
+            else if (urlParts[4].match(/[0-9]+/)) // no username, version
+                fiddleid = urlParts[3] || undefined;
+            else
+                fiddleid = urlParts[4] || undefined;
+        }
+    }
     var cookieId = $.cookie('dotcloud_tmp_stack') || undefined;
     if (cookieId && !fiddleid) {
         result.dbid = $.cookie('dotcloud_tmp_stack');
