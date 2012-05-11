@@ -69,7 +69,7 @@ define(['jquery', 'jq-cookie'], function($) {
             result.dbid = data.result.id;
             ready();
         });
-{{if stackid}}
+{{if !stackid}}
     }
 {{/if}}
     return result;
