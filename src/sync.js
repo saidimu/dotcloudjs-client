@@ -38,6 +38,19 @@ define(function(require) {
         c.super = p;
     };
 
+    var merge = function(a, b) {
+        for (var k in b) {
+            if (!a[k]) {
+                a[k] = b[k];
+            } else if (typeof a[k] == 'object' && !(a[k] instanceof Array)) {
+                a[k] = merge(a[k], b[k]);
+            } else {
+                a[k] = b[k];
+            }
+        }
+        return a;
+    };
+
     // This module is initialized by passing the config object which is a dependency 
     // of the *dotcloud* module.
     return function(config) {
@@ -93,131 +106,130 @@ define(function(require) {
                 changeCallbacks.unshift(fn);
                 return this;
             };
+        };
 
-            // `Array#indexOf(obj)`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf>
-            this.indexOf = function(obj) {
-                return this.__data().indexOf(obj);
-            };
+        // `Array#indexOf(obj)`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf>
+        AbstractArray.prototype.indexOf = function(obj) {
+            return this.__data().indexOf(obj);
+        };
 
-            // `Array#join(str)`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/join>
-            this.join = function(str) {
-                return this.__data().join(str);
-            };
+        // `Array#join(str)`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/join>
+        AbstractArray.prototype.join = function(str) {
+            return this.__data().join(str);
+        };
 
-            // `Array#lastIndexOf(obj)`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/lastIndexOf>
-            this.lastIndexOf = function(obj) {
-                return this.__data().lastIndexOf(obj);
-            };
+        // `Array#lastIndexOf(obj)`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/lastIndexOf>
+        AbstractArray.prototype.lastIndexOf = function(obj) {
+            return this.__data().lastIndexOf(obj);
+        };
 
-            // `Array#reverse()`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/reverse>
-            // **Note: By design, the reverse operation is not reflected on the server-side**
-            this.reverse = function() {
-                this.__data().reverse();
-                return this;
-            };
+        // `Array#reverse()`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/reverse>
+        // **Note: By design, the reverse operation is not reflected on the server-side**
+        AbstractArray.prototype.reverse = function() {
+            this.__data().reverse();
+            return this;
+        };
 
-            // `Array#slice(start, [end])`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/slice>
-            // **Note: the returned Array is a plain, non-synchronized Javascript array.**
-            this.slice = function(start, end) {
-                return this.__data().slice(start, end);
-            };
+        // `Array#slice(start, [end])`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/slice>
+        // **Note: the returned Array is a plain, non-synchronized Javascript array.**
+        AbstractArray.prototype.slice = function(start, end) {
+            return this.__data().slice(start, end);
+        };
 
-            // `Array#sort([fn])`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/sort>
-            // **Note: By design, the sort operation is not reflected on the server-side**
-            this.sort = function(fn) {
-                this.__data().sort(fn);
-                return this;
-            };
+        // `Array#sort([fn])`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/sort>
+        // **Note: By design, the sort operation is not reflected on the server-side**
+        AbstractArray.prototype.sort = function(fn) {
+            this.__data().sort(fn);
+            return this;
+        };
 
-            // `Array#toString()`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/toString>
-            this.toString = function() {
-                return 'SynchronizedArray(' + collection + '):[' + this.__data().join(', ') + ']';
-            };
+        // `Array#toString()`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/toString>
+        AbstractArray.prototype.toString = function() {
+            return 'SynchronizedArray(' + this.__config().collection + '):[' + this.__data().join(', ') + ']';
+        };
 
-            // `Array#valueOf()`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/valueOf>
-            this.valueOf = function() {
-                return this.__data().valueOf();
-            };
+        // `Array#valueOf()`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/valueOf>
+        AbstractArray.prototype.valueOf = function() {
+            return this.__data().valueOf();
+        };
 
-            // Below are the ES5 iteration methods. The native method is not used
-            // to avoid exposing the underlying data array directly.
+        // Below are the ES5 iteration methods. The native method is not used
+        // to avoid exposing the underlying data array directly.
 
-            // `Array#filter(fn, [thisParameter])`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/filter>
-            this.filter = function(fn, that) {
-                var data = this.__data();
-                var result = [];
-                for (var i = 0, l = this.length; i < l; i++) {
-                    var val = data[i];
-                    if (fn.call(that, val, i, this)) {
-                        result.push(val);
-                    }
+        // `Array#filter(fn, [thisParameter])`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/filter>
+        AbstractArray.prototype.filter = function(fn, that) {
+            var data = this.__data();
+            var result = [];
+            for (var i = 0, l = this.length; i < l; i++) {
+                var val = data[i];
+                if (fn.call(that, val, i, this)) {
+                    result.push(val);
                 }
-                return result;
-            };
+            }
+            return result;
+        };
 
-            // `Array#forEach(fn, [thisParameter])`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/forEach>
-            this.forEach = function(fn, that) {
-                var data = this.__data();
-                for (var i = 0, l = this.length; i < l; i++) {
-                    var val = data[i];
-                    fn.call(that, val, i, this);
+        // `Array#forEach(fn, [thisParameter])`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/forEach>
+        AbstractArray.prototype.forEach = function(fn, that) {
+            var data = this.__data();
+            for (var i = 0, l = this.length; i < l; i++) {
+                var val = data[i];
+                fn.call(that, val, i, this);
+            }
+        };
+
+        // `Array#every(fn, [thisParameter])`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/every>
+        AbstractArray.prototype.every = function(fn, that) {
+            var data = this.__data();
+            for (var i = 0, l = this.length; i < l; i++) {
+                var val = data[i];
+                if (!fn.call(that, val, i, this)) {
+                    return false;
                 }
-            };
+            }
+            return true;
+        };
 
-            // `Array#every(fn, [thisParameter])`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/every>
-            this.every = function(fn, that) {
-                var data = this.__data();
-                for (var i = 0, l = this.length; i < l; i++) {
-                    var val = data[i];
-                    if (!fn.call(that, val, i, this)) {
-                        return false;
-                    }
+        // `Array#some(fn, [thisParameter])`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/some>
+        AbstractArray.prototype.some = function(fn, that) {
+            var data = this.__data();
+            for (var i = 0, l = this.length; i < l; i++) {
+                var val = data[i];
+                if (fn.call(that, val, i, this)) {
+                    return true;
                 }
-                return true;
-            };
+            }
+            return false;
+        };
 
-            // `Array#some(fn, [thisParameter])`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/some>
-            this.some = function(fn, that) {
-                var data = this.__data();
-                for (var i = 0, l = this.length; i < l; i++) {
-                    var val = data[i];
-                    if (fn.call(that, val, i, this)) {
-                        return true;
-                    }
-                }
-                return false;
-            };
+        AbstractArray.prototype.reduce = function(fn, init) {
+            var data = this.__data();
+            var cur = (init !== undefined) ? init : data[0];
+            for (var i = (init !== undefined) ? 0 : 1, l = this.length; i < l; i++) {
+                cur = fn(cur, data[i], i, this);
+            }
+            return cur;
+        };
 
-            this.reduce = function(fn, init) {
-                var data = this.__data();
-                var cur = (init !== undefined) ? init : data[0];
-                for (var i = (init !== undefined) ? 0 : 1, l = this.length; i < l; i++) {
-                    cur = fn.call(undefined, cur, data[i], i, this);
-                }
-                return cur;
-            };
-
-            this.reduceRight = function(fn, init) {
-                var data = this.__data();
-                var cur = (init !== undefined) ? init : data[data.length - 1];
-                for (var i = this.length - ((init !== undefined) ? 1 : 2); i >= 0; i--) {
-                    cur = fn.call(undefined, cur, data[i], i, this);
-                }
-                return cur;
-            };
-
+        AbstractArray.prototype.reduceRight = function(fn, init) {
+            var data = this.__data();
+            var cur = (init !== undefined) ? init : data[data.length - 1];
+            for (var i = this.length - ((init !== undefined) ? 1 : 2); i >= 0; i--) {
+                cur = fn(cur, data[i], i, this);
+            }
+            return cur;
         };
 
         // ### sync.Array
@@ -227,7 +239,6 @@ define(function(require) {
         // order is discarded when using this structure. (push and unshift perform the 
         // same operation, as well as pop and shift). If order is important to your 
         // application, you should use the `RedisArray`.**
-
         sync.Array = function(collection) {
             var data = [];
             var dbid = config.dbid;
@@ -240,19 +251,12 @@ define(function(require) {
             var notifyChanged = this.__notifyChanged;
 
             this.__data = function() { return data; };
-            
-            var merge = function(a, b) {
-                for (var k in b) {
-                    if (!a[k]) {
-                        a[k] = b[k];
-                    } else if (typeof a[k] == 'object' && !(a[k] instanceof Array)) {
-                        a[k] = merge(a[k], b[k]);
-                    } else {
-                        a[k] = b[k];
-                    }
-                }
-                return a;
-            }
+            this.__config = function() {
+                return {
+                    dbid: dbid,
+                    collection: collection
+                };
+            };
 
             // We call this RPC method once when creating the array to retrieve
             // the whole collection.
@@ -315,90 +319,106 @@ define(function(require) {
 
             // `Array#length` property.
             this.length = data.length;
+        };
+
+        // `Array#at(index, [update])`  
+        // This method is not a standard Array method. It allows accessing the 
+        // item present at the specified `index`.  
+        // If the second parameter is provided, the objects will be merged and an
+        // update command will be sent to the underlying persistence layer.
+        sync.Array.prototype.at = function(index, update) {
+            if (!!update) {
+                var data = this.__data(),
+                    config = this.__config();
+                data[index] = merge(data[index], update);
+                io.call('sync', 'update')(config.dbid, config.collection, data[index]._id, data[index], function(result) {
+                    if (result[0]) throw result[0];
+                });
+            }
+            return data[index];
+        };
+
+        // `Array#pop()`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/pop>
+        sync.Array.prototype.pop = function() {
+            var data = this.__data(),
+                config = this.__config();
+            io.call('sync', 'remove')(config.dbid, config.collection, data[data.length - 1]._id, 
+                function(result) {
+                    if (result[0]) throw result[0];
+                });
+
+            return data[data.length - 1];
+        };
+
+        // `Array#push(objs...)`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/push>
+        sync.Array.prototype.push = function(obj) {
+            var data = this.__data(),
+                config = this.__config();
+
+            if (arguments.length > 1) {
+                var args = [];
+                for (var i = arguments.length - 1; i >= 0; i--) {
+                    args.unshift(arguments[i]);
+                }
+                obj = args;
+            }
+
+            io.call('sync', 'add')(config.dbid, config.collection, obj, function(result) {
+                if (result[0]) throw result[0];
+            });
+            return data.length + arguments.length;
+        };
+
+        sync.Array.prototype.shift = function() {
+            var data = this.__data(),
+                config = this.__config();
+
+            io.call('sync', 'remove')(config.dbid, config.collection, data[0]._id, function(result) {
+                if (result[0]) throw result[0];
+            });
+            return data[0];
+        };
+
+        // `Array#splice(index, num, [objects...])`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/splice>
+        // **Note: the returned Array is a plain, non-synchronized Javascript array.**
+        sync.Array.prototype.splice = function(index, num) {
+            var data = this.__data(),
+                config = this.__config();
+
+            if (index < 0)
+                index += data.length;
+            for (var i = num - 1; i >= 0; i--) {
+                io.call('sync', 'remove')(config.dbid, config.collection, data[index + i]._id, function(result) {
+                    if (result[0]) throw result[0];
+                });
+            }
             
-            // `Array#at(index, [update])`  
-            // This method is not a standard Array method. It allows accessing the 
-            // item present at the specified `index`.  
-            // If the second parameter is provided, the objects will be merged and an
-            // update command will be sent to the underlying persistence layer.
-            this.at = function(index, update) {
-                if (!!update) {
-                    data[index] = merge(data[index], update);
-                    io.call('sync', 'update')(dbid, collection, data[index]._id, data[index], function(result) {
-                        if (result[0]) throw result[0];
-                    });
+            for (var i = arguments.length - 1; i >= 2; i--) {
+                 this.push(arguments[i]);
+            }
+            return data.slice(index, index + num - 1);
+        };
+
+        // `Array#unshift(objs...)`  
+        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/unshift>
+        sync.Array.prototype.unshift = function(obj) {
+            var data = this.__data(),
+                config = this.__config();
+
+            if (arguments.length > 1) {
+                var args = [];
+                for (var i = arguments.length - 1; i >= 0; i--) {
+                    args.unshift(arguments[i]);
                 }
-                return data[index];
-            };
+                obj = args;
+            }
 
-            // `Array#pop()`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/pop>
-            this.pop = function() {
-                io.call('sync', 'remove')(dbid, collection, data[data.length - 1]._id, 
-                    function(result) {
-                        if (result[0]) throw result[0];
-                    });
-
-                return data[data.length - 1];
-            };
-
-            // `Array#push(objs...)`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/push>
-            this.push = function(obj) {
-                if (arguments.length > 1) {
-                    var args = [];
-                    for (var i = arguments.length - 1; i >= 0; i--) {
-                        args.unshift(arguments[i]);
-                    }
-                    obj = args;
-                }
-
-                io.call('sync', 'add')(dbid, collection, obj, function(result) {
-                    if (result[0]) throw result[0];
-                });
-                return data.length + arguments.length;
-            };
-
-            this.shift = function() {
-                io.call('sync', 'remove')(dbid, collection, data[0]._id, function(result) {
-                    if (result[0]) throw result[0];
-                });
-                return data[0];
-            };
-
-            // `Array#splice(index, num, [objects...])`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/splice>
-            // **Note: the returned Array is a plain, non-synchronized Javascript array.**
-            this.splice = function(index, num) {
-                if (index < 0)
-                    index += data.length;
-                for (var i = num - 1; i >= 0; i--) {
-                    io.call('sync', 'remove')(dbid, collection, data[index + i]._id, function(result) {
-                        if (result[0]) throw result[0];
-                    });
-                }
-                
-                for (var i = arguments.length - 1; i >= 2; i--) {
-                     this.push(arguments[i]);
-                }
-                return data.slice(index, index + num - 1);
-            };
-
-            // `Array#unshift(objs...)`  
-            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/unshift>
-            this.unshift = function(obj) {
-                if (arguments.length > 1) {
-                    var args = [];
-                    for (var i = arguments.length - 1; i >= 0; i--) {
-                        args.unshift(arguments[i]);
-                    }
-                    obj = args;
-                }
-
-                io.call('sync', 'add')(dbid, collection, obj, function(result) {
-                    if (result[0]) throw result[0];
-                });
-            };
+            io.call('sync', 'add')(config.dbid, config.collection, obj, function(result) {
+                if (result[0]) throw result[0];
+            });
         };
 
         // ### sync.RedisArray
@@ -415,21 +435,14 @@ define(function(require) {
             sync.RedisArray.super.apply(this);
 
             this.__data = function() { return data; };
+            this.__config = function() {
+                return {
+                    dbid: dbid,
+                    collection: collection
+                };
+            };
 
             var notifyChanged = this.__notifyChanged;
-
-            var merge = function(a, b) {
-                for (var k in b) {
-                    if (!a[k]) {
-                        a[k] = b[k];
-                    } else if (typeof a[k] == 'object' && !(a[k] instanceof Array)) {
-                        a[k] = merge(a[k], b[k]);
-                    } else {
-                        a[k] = b[k];
-                    }
-                }
-                return a;
-            }
 
             io.call('sync-redis', 'retrieve')(dbid, collection, function(result) {
                 if (result[0])
@@ -472,76 +485,82 @@ define(function(require) {
             });
 
             this.length = data.length;
-            
-            this.at = function(index, update) {
-                if (!!update) {
-                    data[index] = merge(data[index], update);
-                    io.call('sync-redis', 'update')(dbid, collection, index, data[index], function(result) {
-                        if (result[0]) throw result[0];
-                    });
+        };
+
+        sync.RedisArray.prototype.at = function(index, update) {
+            var data = this.__data(), config = this.__config();
+            if (!!update) {
+                data[index] = merge(data[index], update);
+                io.call('sync-redis', 'update')(config.dbid, config.collection, index, data[index], function(result) {
+                    if (result[0]) throw result[0];
+                });
+            }
+            return data[index];
+        }
+
+        sync.RedisArray.prototype.pop = function() {
+            var data = this.__data(), config = this.__config();
+            io.call('sync-redis', 'pop')(config.dbid, config.collection, function(result) {
+                if (result[0]) throw result[0];
+            });
+            return data[data.length - 1];
+        };
+
+        sync.RedisArray.prototype.push = function(obj) {
+            var data = this.__data(), config = this.__config();
+            if (arguments.length > 1) {
+                var args = [];
+                for (var i = arguments.length - 1; i >= 0; i--) {
+                    args.unshift(arguments[i]);
                 }
-                return data[index];
+                obj = args;
             }
 
-            this.pop = function() {
-                io.call('sync-redis', 'pop')(dbid, collection, function(result) {
-                    if (result[0]) throw result[0];
-                });
-                return data[data.length - 1];
-            };
+            io.call('sync-redis', 'push')(config.dbid, config.collection, obj, function(result) {
+                if (result[0]) throw result[0];
+            });
+            return data.length + arguments.length;
+        };
 
-            this.push = function(obj) {
-                if (arguments.length > 1) {
-                    var args = [];
-                    for (var i = arguments.length - 1; i >= 0; i--) {
-                        args.unshift(arguments[i]);
-                    }
-                    obj = args;
+        sync.RedisArray.prototype.shift = function() {
+            var data = this.__data(), config = this.__config();
+            io.call('sync-redis', 'shift')(config.dbid, config.collection, function(result) {
+                if (result[0]) throw result[0];
+            });
+            return data[0];
+        };
+
+        sync.RedisArray.prototype.splice = function(index, num) {
+            var data = this.__data(), config = this.__config();
+            if (index < 0)
+                index += data.length;
+            var objects = [];
+            for (var i = arguments.length - 1; i >= 2; i--) {
+                 objects.push(arguments[i]);
+            }
+            io.call('sync-redis', 'splice')(config.dbid, config.collection, index, num, objects, function(result) {
+                if (result[0]) {
+                    throw result[0];
                 }
+                console.log(result[1]);
+            });
+            return data.slice(index, index + num - 1);
+        };
 
-                io.call('sync-redis', 'push')(dbid, collection, obj, function(result) {
-                    if (result[0]) throw result[0];
-                });
-                return data.length + arguments.length;
-            };
-
-            this.shift = function() {
-                io.call('sync-redis', 'shift')(dbid, collection, function(result) {
-                    if (result[0]) throw result[0];
-                });
-                return data[0];
-            };
-
-            this.splice = function(index, num) {
-                if (index < 0)
-                    index += data.length;
-                var objects = [];
-                for (var i = arguments.length - 1; i >= 2; i--) {
-                     objects.push(arguments[i]);
+        sync.RedisArray.prototype.unshift = function(obj) {
+            var data = this.__data(), config = this.__config();
+            if (arguments.length > 1) {
+                var args = [];
+                for (var i = arguments.length - 1; i >= 0; i--) {
+                    args.unshift(arguments[i]);
                 }
-                io.call('sync-redis', 'splice')(dbid, collection, index, num, objects, function(result) {
-                    if (result[0]) {
-                        throw result[0];
-                    }
-                    console.log(result[1]);
-                });
-                return data.slice(index, index + num - 1);
-            };
+                obj = args;
+            }
 
-            this.unshift = function(obj) {
-                if (arguments.length > 1) {
-                    var args = [];
-                    for (var i = arguments.length - 1; i >= 0; i--) {
-                        args.unshift(arguments[i]);
-                    }
-                    obj = args;
-                }
-
-                io.call('sync-redis', 'unshift')(dbid, collection, obj, function(result) {
-                    if (result[0]) throw result[0];
-                });
-                return data[0];
-            };
+            io.call('sync-redis', 'unshift')(config.dbid, config.collection, obj, function(result) {
+                if (result[0]) throw result[0];
+            });
+            return data[0];
         };
 
         return sync;
