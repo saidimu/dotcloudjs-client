@@ -106,131 +106,133 @@ define(function(require) {
                 changeCallbacks.unshift(fn);
                 return this;
             };
-        };
 
-        // `Array#indexOf(obj)`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf>
-        AbstractArray.prototype.indexOf = function(obj) {
-            return this.__data().indexOf(obj);
-        };
+             // `Array#indexOf(obj)`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf>
+            this.indexOf = function(obj) {
+                return this.__data().indexOf(obj);
+            };
 
-        // `Array#join(str)`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/join>
-        AbstractArray.prototype.join = function(str) {
-            return this.__data().join(str);
-        };
+            // `Array#join(str)`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/join>
+            this.join = function(str) {
+                return this.__data().join(str);
+            };
 
-        // `Array#lastIndexOf(obj)`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/lastIndexOf>
-        AbstractArray.prototype.lastIndexOf = function(obj) {
-            return this.__data().lastIndexOf(obj);
-        };
+            // `Array#lastIndexOf(obj)`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/lastIndexOf>
+            this.lastIndexOf = function(obj) {
+                return this.__data().lastIndexOf(obj);
+            };
 
-        // `Array#reverse()`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/reverse>
-        // **Note: By design, the reverse operation is not reflected on the server-side**
-        AbstractArray.prototype.reverse = function() {
-            this.__data().reverse();
-            return this;
-        };
+            // `Array#reverse()`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/reverse>
+            // **Note: By design, the reverse operation is not reflected on the server-side**
+            this.reverse = function() {
+                this.__data().reverse();
+                return this;
+            };
 
-        // `Array#slice(start, [end])`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/slice>
-        // **Note: the returned Array is a plain, non-synchronized Javascript array.**
-        AbstractArray.prototype.slice = function(start, end) {
-            return this.__data().slice(start, end);
-        };
+            // `Array#slice(start, [end])`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/slice>
+            // **Note: the returned Array is a plain, non-synchronized Javascript array.**
+            this.slice = function(start, end) {
+                return this.__data().slice(start, end);
+            };
 
-        // `Array#sort([fn])`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/sort>
-        // **Note: By design, the sort operation is not reflected on the server-side**
-        AbstractArray.prototype.sort = function(fn) {
-            this.__data().sort(fn);
-            return this;
-        };
+            // `Array#sort([fn])`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/sort>
+            // **Note: By design, the sort operation is not reflected on the server-side**
+            this.sort = function(fn) {
+                this.__data().sort(fn);
+                return this;
+            };
 
-        // `Array#toString()`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/toString>
-        AbstractArray.prototype.toString = function() {
-            return 'SynchronizedArray(' + this.__config().collection + '):[' + this.__data().join(', ') + ']';
-        };
+            // `Array#toString()`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/toString>
+            this.toString = function() {
+                return 'SynchronizedArray(' + this.__config().collection + '):[' + this.__data().join(', ') + ']';
+            };
 
-        // `Array#valueOf()`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/valueOf>
-        AbstractArray.prototype.valueOf = function() {
-            return this.__data().valueOf();
-        };
+            // `Array#valueOf()`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/valueOf>
+            this.valueOf = function() {
+                return this.__data().valueOf();
+            };
 
-        // Below are the ES5 iteration methods. The native method is not used
-        // to avoid exposing the underlying data array directly.
+            // Below are the ES5 iteration methods. The native method is not used
+            // to avoid exposing the underlying data array directly.
 
-        // `Array#filter(fn, [thisParameter])`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/filter>
-        AbstractArray.prototype.filter = function(fn, that) {
-            var data = this.__data();
-            var result = [];
-            for (var i = 0, l = this.length; i < l; i++) {
-                var val = data[i];
-                if (fn.call(that, val, i, this)) {
-                    result.push(val);
+            // `Array#filter(fn, [thisParameter])`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/filter>
+            this.filter = function(fn, that) {
+                var data = this.__data();
+                var result = [];
+                for (var i = 0, l = this.length; i < l; i++) {
+                    var val = data[i];
+                    if (fn.call(that, val, i, this)) {
+                        result.push(val);
+                    }
                 }
-            }
-            return result;
-        };
+                return result;
+            };
 
-        // `Array#forEach(fn, [thisParameter])`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/forEach>
-        AbstractArray.prototype.forEach = function(fn, that) {
-            var data = this.__data();
-            for (var i = 0, l = this.length; i < l; i++) {
-                var val = data[i];
-                fn.call(that, val, i, this);
-            }
-        };
-
-        // `Array#every(fn, [thisParameter])`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/every>
-        AbstractArray.prototype.every = function(fn, that) {
-            var data = this.__data();
-            for (var i = 0, l = this.length; i < l; i++) {
-                var val = data[i];
-                if (!fn.call(that, val, i, this)) {
-                    return false;
+            // `Array#forEach(fn, [thisParameter])`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/forEach>
+            this.forEach = function(fn, that) {
+                var data = this.__data();
+                for (var i = 0, l = this.length; i < l; i++) {
+                    var val = data[i];
+                    fn.call(that, val, i, this);
                 }
-            }
-            return true;
-        };
+            };
 
-        // `Array#some(fn, [thisParameter])`  
-        // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/some>
-        AbstractArray.prototype.some = function(fn, that) {
-            var data = this.__data();
-            for (var i = 0, l = this.length; i < l; i++) {
-                var val = data[i];
-                if (fn.call(that, val, i, this)) {
-                    return true;
+            // `Array#every(fn, [thisParameter])`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/every>
+            this.every = function(fn, that) {
+                var data = this.__data();
+                for (var i = 0, l = this.length; i < l; i++) {
+                    var val = data[i];
+                    if (!fn.call(that, val, i, this)) {
+                        return false;
+                    }
                 }
-            }
-            return false;
+                return true;
+            };
+
+            // `Array#some(fn, [thisParameter])`  
+            // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/some>
+            this.some = function(fn, that) {
+                var data = this.__data();
+                for (var i = 0, l = this.length; i < l; i++) {
+                    var val = data[i];
+                    if (fn.call(that, val, i, this)) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            this.reduce = function(fn, init) {
+                var data = this.__data();
+                var cur = (init !== undefined) ? init : data[0];
+                for (var i = (init !== undefined) ? 0 : 1, l = this.length; i < l; i++) {
+                    cur = fn(cur, data[i], i, this);
+                }
+                return cur;
+            };
+
+            this.reduceRight = function(fn, init) {
+                var data = this.__data();
+                var cur = (init !== undefined) ? init : data[data.length - 1];
+                for (var i = this.length - ((init !== undefined) ? 1 : 2); i >= 0; i--) {
+                    cur = fn(cur, data[i], i, this);
+                }
+                return cur;
+            };
         };
 
-        AbstractArray.prototype.reduce = function(fn, init) {
-            var data = this.__data();
-            var cur = (init !== undefined) ? init : data[0];
-            for (var i = (init !== undefined) ? 0 : 1, l = this.length; i < l; i++) {
-                cur = fn(cur, data[i], i, this);
-            }
-            return cur;
-        };
-
-        AbstractArray.prototype.reduceRight = function(fn, init) {
-            var data = this.__data();
-            var cur = (init !== undefined) ? init : data[data.length - 1];
-            for (var i = this.length - ((init !== undefined) ? 1 : 2); i >= 0; i--) {
-                cur = fn(cur, data[i], i, this);
-            }
-            return cur;
-        };
+    
 
         // ### sync.Array
         // Synchronized Array type, which is the return type of the `sync.synchronize` 
@@ -327,9 +329,10 @@ define(function(require) {
         // If the second parameter is provided, the objects will be merged and an
         // update command will be sent to the underlying persistence layer.
         sync.Array.prototype.at = function(index, update) {
+            var data = this.__data(),
+                config = this.__config();
+
             if (!!update) {
-                var data = this.__data(),
-                    config = this.__config();
                 data[index] = merge(data[index], update);
                 io.call('sync', 'update')(config.dbid, config.collection, data[index]._id, data[index], function(result) {
                     if (result[0]) throw result[0];
