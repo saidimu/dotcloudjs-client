@@ -52,9 +52,15 @@ function build(dir, cfg_obj) {
 }
 
 function copy_src_files(dst) {
-    copy(__dirname + '/src/dotcloud.js', dst + '/dotcloud.js');
-    copy(__dirname + '/src/db.js', dst + '/db.js');
-    copy(__dirname + '/src/sync.js', dst + '/sync.js');
+    var srcContents = fs.readdirSync(__dirname + '/src/');
+
+    for (var i = 0; i < srcContents.length; i++) {
+        var fileName = srcContents[i];
+        if (fileName.substring(fileName.length - 3) == '.js') {
+            copy(__dirname + '/src/' + fileName, dst + '/' + fileName);
+        }
+    }
+
     copy(__dirname + '/libraries/jq-cookie.js', dst + '/jq-cookie.js');
 }
 
