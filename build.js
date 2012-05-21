@@ -25,8 +25,8 @@ function conf_string(cfg_obj) {
 }
 
 function copy(src, dst, cb) {
-    is = fs.createReadStream(src);
-    os = fs.createWriteStream(dst);
+    var is = fs.createReadStream(src);
+    var os = fs.createWriteStream(dst);
     util.pump(is, os, cb);
 }
 

@@ -15,7 +15,7 @@ define(function(require) {
     // We use izs' `inherits` function to factor similar behavior between our 
     // array proxies. This is the non-ES5 version.
     function inherits(c, p, proto) {
-        function F() { this.constructor = c };
+        function F() { this.constructor = c; }
         F.prototype = p.prototype;
         var e = {};
         for (var i in c.prototype) {
@@ -23,7 +23,7 @@ define(function(require) {
                 e[i] = c.prototype[i];
         }
         if (proto) {
-            for (var i in proto) {
+            for (i in proto) {
                 if (proto.hasOwnProperty(i))
                     e[i] = proto[i];
             }
@@ -31,12 +31,12 @@ define(function(require) {
 
         c.prototype = new F();
 
-        for (var i in e) {
+        for (i in e) {
             if (e.hasOwnProperty(i))
                 c.prototype[i] = e[i];
         }
         c.super = p;
-    };
+    }
 
     var merge = function(a, b) {
         for (var k in b) {
@@ -78,7 +78,18 @@ define(function(require) {
         };
 
         var AbstractArray = function(collection) {
+            
+            // Placeholder - this method is defined in child classes.
             this.__data;
+
+            var that = this;
+
+            // Update the length property.
+            var updateLength = function() {
+                that.length = that.__data().length;
+            };
+
+            var changeCallbacks = [updateLength];
 
             // This method is called everytime the underlying data is changed.
             // It is responsible of calling all the observers declared using the
@@ -88,15 +99,6 @@ define(function(require) {
                     changeCallbacks[i].apply(null, arguments);
                 }
             };
-
-            var that = this;
-
-            // Update the length property.
-            var updateLength = function() {
-                that.length = that.__data().length;
-            }
-
-            var changeCallbacks = [updateLength];
 
             // `Array#observe(fn)`  
             // This method adds an observer function to the synchronized array. 
@@ -244,7 +246,6 @@ define(function(require) {
         sync.Array = function(collection) {
             var data = [];
             var dbid = config.dbid;
-            var that = this;
 
             // Inherit the AbstractArray class
             inherits(sync.Array, AbstractArray);
@@ -271,9 +272,10 @@ define(function(require) {
 
             // Subscribe to the 'inserted' event.
             io.on('inserted-' + dbid + '.' + collection, function(obj) {
+                var i, j;
                 if (obj instanceof Array) {
-                    for (var j = obj.length; j >= 0; j--) {
-                        for (var i = data.length - 1; i >= 0; i--) {
+                    for (j = obj.length; j >= 0; j--) {
+                        for (i = data.length - 1; i >= 0; i--) {
                             if (data[i]._id === obj[i]._id) {
                                 break;
                             }
@@ -281,7 +283,7 @@ define(function(require) {
                         (i < 0) && data.push(obj);
                     }
                 } else {
-                    for (var i = data.length - 1; i >= 0; i--) {
+                    for (i = data.length - 1; i >= 0; i--) {
                         if (data[i]._id === obj._id) {
                             return;
                         }
@@ -389,17 +391,19 @@ define(function(require) {
         // **Note: the returned Array is a plain, non-synchronized Javascript array.**
         sync.Array.prototype.splice = function(index, num) {
             var data = this.__data(),
-                config = this.__config();
+                config = this.__config(),
+                rmCb = function(result) {
+                    if (result[0]) throw result[0];
+                };
 
             if (index < 0)
                 index += data.length;
+
             for (var i = num - 1; i >= 0; i--) {
-                io.call('sync', 'remove')(config.dbid, config.collection, data[index + i]._id, function(result) {
-                    if (result[0]) throw result[0];
-                });
+                io.call('sync', 'remove')(config.dbid, config.collection, data[index + i]._id, rmCb);
             }
             
-            for (var i = arguments.length - 1; i >= 2; i--) {
+            for (i = arguments.length - 1; i >= 2; i--) {
                  this.push(arguments[i]);
             }
             return data.slice(index, index + num - 1);
@@ -408,8 +412,7 @@ define(function(require) {
         // `Array#unshift(objs...)`  
         // <https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/unshift>
         sync.Array.prototype.unshift = function(obj) {
-            var data = this.__data(),
-                config = this.__config();
+            var config = this.__config();
 
             if (arguments.length > 1) {
                 var args = [];
@@ -431,7 +434,6 @@ define(function(require) {
         sync.RedisArray = function(collection) {
             var data = [];
             var dbid = config.dbid;
-            var that = this;
 
             // Inherit the AbstractArray class
             inherits(sync.RedisArray, AbstractArray);
@@ -478,7 +480,7 @@ define(function(require) {
             // atomically server-side, so a specific event is fired when a splice happens.
             io.on('spliced-' + dbid + ':' + collection, function(index, num, objects) {
                 if (!objects || !objects.length)
-                    data.splice(index, num)
+                    data.splice(index, num);
                 else {
                     objects.unshift(num); objects.unshift(index);
                     data.splice.apply(data, objects);
@@ -499,7 +501,7 @@ define(function(require) {
                 });
             }
             return data[index];
-        }
+        };
 
         sync.RedisArray.prototype.pop = function() {
             var data = this.__data(), config = this.__config();

@@ -14,20 +14,7 @@
 // containing the data returned by the query, if any.
 define(function(require) {
     return function(config) {
-        var $ = require('jquery');
-        var prefix = config.host + '/rpc/' + config.dbid + '/';
-        // Short-hand for issuing POST requests with JSON-formatted data.
-        var post = function(url, data, cb) {
-            $.ajax(url, {
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: cb || noop,
-                type: 'POST'
-            });
-        };
-
-        var noop = function() {};
-
+        var io = require('stack.io')();
         var db = {
             // `db.insert(collection, obj|objArray, [cb])`  
             // Insert one or several objects in `collection`.  
