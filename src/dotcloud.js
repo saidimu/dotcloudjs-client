@@ -46,10 +46,6 @@ define(function(require) {
             self.sync = require('sync')(config);
         }
 
-        if (config.modules.FB_ENABLED) {
-            self.fb = require('fb')(config);
-        }
-
         ready();
         isReady = true;
     });

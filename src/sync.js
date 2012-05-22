@@ -274,13 +274,13 @@ define(function(require) {
             io.on('inserted-' + dbid + '.' + collection, function(obj) {
                 var i, j;
                 if (obj instanceof Array) {
-                    for (j = obj.length; j >= 0; j--) {
+                    for (j = obj.length - 1; j >= 0; j--) {
                         for (i = data.length - 1; i >= 0; i--) {
-                            if (data[i]._id === obj[i]._id) {
+                            if (data[i]._id === obj[j]._id) {
                                 break;
                             }
                         }
-                        (i < 0) && data.push(obj);
+                        (i < 0) && data.push(obj[j]);
                     }
                 } else {
                     for (i = data.length - 1; i >= 0; i--) {
@@ -312,6 +312,8 @@ define(function(require) {
             
             // Subscribe to the 'updated' event.
             io.on('updated-' + dbid + '.' + collection, function(obj) {
+                if (!obj)
+                    return;
                 for (var i = data.length - 1; i >= 0; i--) {
                     if (obj._id == data[i]._id) {
                         data[i] = obj;
