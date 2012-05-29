@@ -46,6 +46,11 @@ define(function(require) {
             self.sync = require('sync')(config);
         }
 
+        if (config.modules.TWITTER_ENABLED) {
+            // * [dotcloud.twitter](twitter.html) &mdash; Twitter APIs
+            self.twitter = require('twitter')(config);
+        }
+
         ready();
         isReady = true;
     });
