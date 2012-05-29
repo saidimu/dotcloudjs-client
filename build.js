@@ -18,6 +18,8 @@ var DEFAULT_CONFIG = {
     }
 };
 
+var DOTCLOUD_GLOB_STRING = 'window.dotcloud={cb:[],ready:function(fn){this.cb.push(fn)}};require(["dotcloud"],function(d){var c=dotcloud.cb;window.dotcloud=d;d.ready(c);});';
+
 var argc = process.argv.length;
 
 function conf_string(cfg_obj) {
@@ -48,6 +50,8 @@ function build(dir, cfg_obj) {
     var requirejs_content = fs.readFileSync(__dirname + '/libraries/require.js', 'utf-8');
     fs.mkdirSync(dir);
     fs.writeFileSync(dir + '/dotcloud-require.js', requirejs_content + 
+        conf_string(cfg_obj) + DOTCLOUD_GLOB_STRING);
+    fs.writeFileSync(dir + '/dotcloud-require-noglob.js', requirejs_content + 
         conf_string(cfg_obj));
 }
 

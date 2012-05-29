@@ -28,9 +28,21 @@ define(function(require) {
     // as a callback when the `dotcloud` module is ready to be used.  
     // The module is provided as first (and only) argument of the callback.
     self.ready = function(fn) {
-        readyCb.push(fn);
-        if (isReady)
-            fn(self);
+        if (fn instanceof Array) {
+            readyCb = readyCb.concat(fn);
+        } else {
+            readyCb.push(fn);
+        }
+        if (isReady) {
+            if (fn instanceof Array) {
+                for (var i = 0, l = fn.length; i < l; i++) {
+                    fn[i](self);
+                }
+            } else {
+                fn(self);
+            }
+        }
+            
     };
 
     // The dotcloud object is a namespace to several submodules loaded dynamically.  
