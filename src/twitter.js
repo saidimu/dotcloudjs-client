@@ -18,7 +18,7 @@ define(function(require) {
 
         var module = {
             init: function(key, secret, token, cb) {
-                io.call('twitter', 'init')(config.stackid, key, secret, token, function(svcName) {
+                io.call('twitter', 'init')(config.stackid || config.dbid, key, secret, token, function(svcName) {
                     appService = svcName;
                     cb();
                 });
@@ -192,6 +192,23 @@ define(function(require) {
             // ### Search API
             search: function() {
                 transfer('search', arguments);
+            },
+
+            // ## Streaming API
+            sampleStream: function(params, cb) {
+                transfer('sampleStream', [params, cb]);
+            },
+            filteredStream: function(params, cb) {
+                transfer('filteredStream', [params, cb]);
+            },
+            firehose: function(params, cb) {
+                transfer('firehose', [params, cb]);
+            },
+            siteStream: function(follow, params, cb) {
+                transfer('siteStream', [follow, params, cb]);
+            },
+            userStream: function(params, cb) {
+                transfer('userStream', [params, cb]);
             }
         };
 
