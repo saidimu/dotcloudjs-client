@@ -18,7 +18,7 @@ define(function(require) {
 
         var module = {
             init: function(key, secret, token, cb) {
-                io.call('twitter', 'init')(config.stackid || config.dbid, key, secret, token, function(svcName) {
+                io.call('twitter', 'init')(key, secret, token, function(svcName) {
                     appService = svcName;
                     cb();
                 });
@@ -124,6 +124,20 @@ define(function(require) {
                 transfer('suggestions', arguments);
             },
 
+            // ### Block
+            blocking: function(params, ids, cb) {
+                transfer('blocking', [params, ids, cb]);
+            },
+            isBlocked: function(user, params, cb) {
+                transfer('isBlocked', [user, params, cb]);
+            },
+            createBlock: function(user, params, cb) {
+                transfer('createBlock', [user, params, cb]);
+            },
+            destroyBlock: function(user, params, cb) {
+                transfer('destroyBlock', [user, params, cb]);
+            },
+
             // ### Favorites
             favorites: function(user, params, cb) {
                 transfer('favorites', arguments);
@@ -133,6 +147,75 @@ define(function(require) {
             },
             destroyFavorite: function(id, cb) {
                 transfer('destroyFavorite', arguments);
+            },
+
+            // ### Lists
+            allLists: function(user, cb) {
+                transfer('allLists', [user, cb]);
+            },
+
+            listStatuses: function(list, owner, params, cb) {
+                transfer('listStatuses', arguments);
+            },
+
+            listSubscriptions: function(user, params, cb) {
+                transfer('listSubscriptions', arguments);
+            },
+
+            listSubscribers: function(list, owner, params, cb) {
+                transfer('listSubscribers', arguments);
+            },
+
+            listSubscribe: function(list, owner, cb) {
+                transfer('listSubscribe', arguments);
+            },
+
+            isListSubscriber: function(list, owner, user, params, cb) {
+                transfer('isListSubscriber', arguments);
+            },
+
+            listUnsubscribe: function(list, owner, cb) {
+                transfer('listUnsubscribe', arguments);
+            },
+
+            listMemberships: function(user, params, cb) {
+                transfer('listMemberships', arguments);
+            },
+
+            listMembers: function(list, owner, params, cb) {
+                transfer('listMembers', arguments);
+            },
+
+            addMember: function(list, owner, user, cb) {
+                transfer('addMember', arguments);
+            },
+
+            isListMember: function(list, owner, user, params, cb) {
+                transfer('isListMember', arguments);
+            },
+
+            removeListMember: function(list, owner, user, cb) {
+                transfer('removeListMember', arguments);
+            },
+
+            createList: function(name, mode, desc, cb) {
+                transfer('createList', arguments);
+            },
+
+            destroyList: function(list, owner, cb) {
+                transfer('destroyList', arguments);
+            },
+
+            updateList: function(list, owner, update, cb) {
+                transfer('updateList', arguments);
+            },
+
+            lists: function(user, cursor, cb) {
+                transfer('lists', arguments);
+            },
+
+            showList: function(list, owner, cb) {
+                transfer('showList', arguments);
             },
 
             // ### Accounts
@@ -176,6 +259,50 @@ define(function(require) {
             },
             leave: function(user, cb) {
                 transfer('leave', [user, cb]);
+            },
+            // ### Saved searches
+            savedSearches: function(cb) {
+                transfer('savedSearches', [cb]);
+            },
+            showSavedSearch: function(id, cb) {
+                transfer('showSavedSearch', [id, cb]);
+            },
+            createSavedSearch: function(query, cb) {
+                transfer('createSavedSearch', [query, cb]);
+            },
+            destroySavedSearch: function(id, cb) {
+                transfer('destroySavedSearch', [id, cb]);
+            },
+
+            // ### Geolocation
+            geoId: function(placeId, cb) {
+                transfer('geoId', [placeId, cb]);
+            },
+            reverseGeocode: function(latitude, longitude, params, cb) {
+                transfer('reverseGeocode', [latitude, longitude, params, cb]);
+            },
+            searchGeo: function(query, params, cb) {
+                transfer('searchGeo', [query, params, cb]);
+            },
+            similarPlaces: function(latitude, longitude, name, params, cb) {
+                transfer('similarPlaces', arguments);
+            },
+            createPlace: function(params, cb) {
+                transfer('createPlace', [params, cb]);
+            },
+
+            // ### Trends
+            trends: function(woeid, exclude, cb) {
+                transfer('trends', [woeid, exclude, cb]);
+            },
+            availableTrends: function(latitude, longitude, cb) {
+                transfer('dailyTrends', [latitude, longitude, cb]);
+            },
+            dailyTrends: function(params, cb) {
+                transfer('dailyTrends', [params, cb]);
+            },
+            weeklyTrends: function(params, cb) {
+                transfer('weeklyTrends', [params, cb]);
             },
 
             // ### Help
