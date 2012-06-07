@@ -1,6 +1,6 @@
 dotcloud.js
 ===========
-Javascript gateway library to powerful cloud services.  
+Javascript gateway library to powerful cloud services. Meant to be used in conjuction with [dotcloudjs-server](https://github.com/dotcloud/dotcloudjs-server).  
 For more information, head over to <http://js.dotcloud.com>
 
 Building your own
