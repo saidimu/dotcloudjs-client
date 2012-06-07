@@ -47,6 +47,8 @@ define(['jquery', 'jq-cookie'], function($) {
                 fiddleid = urlParts[3] || undefined;
             else if (urlParts[4].match(/[0-9]+/)) // no username, version
                 fiddleid = urlParts[3] || undefined;
+            else if (urlParts[4] === 'embedded')
+                fiddleid = urlParts[3];
             else
                 fiddleid = urlParts[4] || undefined;
         }
