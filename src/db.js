@@ -23,7 +23,6 @@ define(function(require) {
             // Result of this method contains the inserted object(s) with their newly-created _id.
             insert: function(collection, obj, cb) {
                 io.call('db', 'insert')(config.dbid, collection, obj, cb);
-                //post(prefix + collection + '/insert', { obj: obj }, cb);
                 return this;
             },
             // `db.update(collection, id|criteria, obj, [cb])`  
@@ -31,15 +30,7 @@ define(function(require) {
             // Second argument can be an object ID or a MongoDB query object.
             // Result of this method indicates the number of objects effected.
             update: function(collection, criteria, obj, cb) {
-                // var data = {
-                //     obj: obj,
-                //     id: (typeof criteria == 'string') ? criteria : undefined,
-                //     conditions: (typeof criteria == 'string') ? undefined : criteria
-                // };
-
                 io.call('db', 'update')(config.dbid, collection, criteria, obj, cb);
-
-                // post(prefix + collection + '/update', data, cb);
                 return this;
             },
             // `db.remove(collection, [id], [cb])`  
@@ -51,8 +42,6 @@ define(function(require) {
                     cb = id;
                     id = undefined;
                 }
-
-                // post(prefix + collection + '/remove', { id: id }, cb);
                 io.call('db', 'remove')(config.dbid, collection, id, cb);
                 return this;
             },
@@ -66,12 +55,6 @@ define(function(require) {
                     criteria = undefined;
                 }
 
-                // var data = {
-                //     id: (typeof criteria == 'string') ? criteria : undefined,
-                //     query: (typeof criteria == 'string') ? undefined : criteria
-                // };
-
-                // post(prefix + collection + '/find', data, cb);
                 io.call('db', 'find')(config.dbid, collection, criteria, cb);
                 return this;
             },
@@ -80,10 +63,6 @@ define(function(require) {
             // If found, update it with `obj`. Otherwise, insert `obj` as a new element.  
             // `criteria` is a MongoDB query object.
             upsert: function(collection, criteria, obj, cb) {
-                // post(prefix + collection + '/upsert', {
-                //     obj: obj,
-                //     conditions: criteria
-                // }, cb);
                 io.call('db', 'upsert')(config.dbid, collection, criteria, obj, cb);
                 return this;
             }
