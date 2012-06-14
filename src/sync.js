@@ -330,59 +330,6 @@ define(function(require) {
                 }
             });
 
-            /*// Subscribe to the 'inserted' event.
-            io.on('inserted-' + dbid + '.' + collection, function(obj) {
-                var i, j;
-                if (obj instanceof Array) {
-                    for (j = obj.length - 1; j >= 0; j--) {
-                        for (i = data.length - 1; i >= 0; i--) {
-                            if (data[i]._id === obj[j]._id) {
-                                break;
-                            }
-                        }
-                        (i < 0) && data.push(obj[j]);
-                    }
-                } else {
-                    for (i = data.length - 1; i >= 0; i--) {
-                        if (data[i]._id === obj._id) {
-                            return;
-                        }
-                    }
-                    data.push(obj);
-                }
-                notifyChanged('inserted', obj);
-            });
-
-            // Subscribe to the 'removed' event.
-            io.on('removed-' + dbid + '.' + collection, function(id) {
-                for (var i = data.length - 1; i >= 0; i--) {
-                    if (data[i]._id === id) {
-                        if (i === 0) { 
-                            data.shift();
-                        } else if (i === data.length - 1) {
-                            data.pop();
-                        } else {
-                            data.splice(i, 1);
-                        }
-                        notifyChanged('removed', id);
-                        break;
-                    }
-                }
-            });
-            
-            // Subscribe to the 'updated' event.
-            io.on('updated-' + dbid + '.' + collection, function(obj) {
-                if (!obj)
-                    return;
-                for (var i = data.length - 1; i >= 0; i--) {
-                    if (obj._id == data[i]._id) {
-                        data[i] = obj;
-                        notifyChanged('updated', obj);
-                        break;
-                    }
-                }
-            });*/
-
             // `Array#length` property.
             this.length = data.length;
         };
