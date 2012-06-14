@@ -265,12 +265,72 @@ define(function(require) {
             // the whole collection.
             io.call('sync', 'retrieve')(dbid, collection, function(result) {
                 if (result[0])
-                    throw result[0];
-                data = result[1] || [];
-                notifyChanged('synchronized', data);
+                    throw JSON.stringify(result[0]);
+                switch (result[1].type) {
+                    case 'synchronized':
+                        data = result[1].data || [];
+                        notifyChanged('synchronized', data);
+                        break;
+                    case 'inserted':
+                        var obj = result[1].data;
+                        var i, j;
+                        if (obj instanceof Array) {
+                            for (j = obj.length - 1; j >= 0; j--) {
+                                for (i = data.length - 1; i >= 0; i--) {
+                                    if (data[i]._id === obj[j]._id) {
+                                        break;
+                                    }
+                                }
+                                (i < 0) && data.push(obj[j]);
+                            }
+                        } else {
+                            for (i = data.length - 1; i >= 0; i--) {
+                                if (data[i]._id === obj._id) {
+                                    return;
+                                }
+                            }
+                            data.push(obj);
+                        }
+                        notifyChanged('inserted', obj);
+                        break;
+                    case 'removed':
+                        var id = result[1].data;
+                        for (var i = data.length - 1; i >= 0; i--) {
+                            if (data[i]._id === id) {
+                                if (i === 0) { 
+                                    data.shift();
+                                } else if (i === data.length - 1) {
+                                    data.pop();
+                                } else {
+                                    data.splice(i, 1);
+                                }
+                                notifyChanged('removed', id);
+                                break;
+                            }
+                        }
+                        break;
+                    case 'removedall':
+                        data = [];
+                        notifyChanged('removedall', data);
+                        break;
+                    case 'updated':
+                        var obj = result[1].data;
+                        if (!obj)
+                            return;
+                        for (var i = data.length - 1; i >= 0; i--) {
+                            if (obj._id == data[i]._id) {
+                                data[i] = obj;
+                                notifyChanged('updated', obj);
+                                break;
+                            }
+                        }
+                        break;
+                    default:
+                        throw 'Unexpected change type: ' + result[1].type;
+                }
             });
 
-            // Subscribe to the 'inserted' event.
+            /*// Subscribe to the 'inserted' event.
             io.on('inserted-' + dbid + '.' + collection, function(obj) {
                 var i, j;
                 if (obj instanceof Array) {
@@ -321,7 +381,7 @@ define(function(require) {
                         break;
                     }
                 }
-            });
+            });*/
 
             // `Array#length` property.
             this.length = data.length;
@@ -453,42 +513,42 @@ define(function(require) {
 
             io.call('sync-redis', 'retrieve')(dbid, collection, function(result) {
                 if (result[0])
-                    throw result[0];
-                data = result[1] || [];
-                notifyChanged('synchronized', data);
-            });
-
-            io.on('inserted-' + dbid + ':' + collection, function(obj, mode) {
-                if (obj instanceof Array) {
-                    data[mode].apply(data, obj);
-                } else {
-                    data[mode](obj);
+                    throw JSON.stringify(result[0]);
+                var resData = result[1].data;
+                switch (result[1].type) {
+                    case 'synchronized':
+                        data = result[1].data || [];
+                        notifyChanged('synchronized', data);
+                        break;
+                    case 'inserted':
+                        if (resData.object instanceof Array) {
+                            data[resData.operation].apply(data, resData.object);
+                        } else {
+                            data[resData.operation](resData.object);
+                        }
+                        notifyChanged(resData.operation, resData.object);
+                        break;
+                    case 'removed':
+                        data[resData.operation]();
+                        notifyChanged(resData.operation, resData.object);
+                        break;
+                    case 'updated':
+                        data[resData.index] = resData.object;
+                        notifyChanged('updated', resData.object, resData.index);
+                        break;
+                    case 'spliced':
+                        if (!resData.objects || !resData.objects.length) {
+                            data.splice(resData.index, resData.num);
+                        } else {
+                            var args = resData.objects.slice(0);
+                            args.unshift(resData.index, resData.num);
+                            data.splice.apply(data, args);
+                        }
+                        notifyChanged('spliced', resData.index, resData.num, resData.objects);
+                        break;
+                    default:
+                        throw 'Unexpected change type: ' + result[1].type;
                 }
-
-                notifyChanged(mode, obj);
-            });
-
-            io.on('removed-' + dbid + ':' + collection, function(obj, mode) {
-                data[mode]();
-                notifyChanged(mode, obj);
-            });
-
-            io.on('updated-' + dbid + ':' + collection, function(index, obj) {
-                data[index] = obj;
-                notifyChanged('updated', obj, index);
-            });
-
-            // With redis persistence, the splice operation is actually performed 
-            // atomically server-side, so a specific event is fired when a splice happens.
-            io.on('spliced-' + dbid + ':' + collection, function(index, num, objects) {
-                if (!objects || !objects.length)
-                    data.splice(index, num);
-                else {
-                    objects.unshift(num); objects.unshift(index);
-                    data.splice.apply(data, objects);
-                }
-
-                notifyChanged('spliced', index, num, objects);
             });
 
             this.length = data.length;
@@ -549,7 +609,6 @@ define(function(require) {
                 if (result[0]) {
                     throw result[0];
                 }
-                console.log(result[1]);
             });
             return data.slice(index, index + num - 1);
         };
