@@ -15,8 +15,7 @@
 // To avoid ambiguity, `screen_name`s can be prefixed with "@"*
 define(function(require) {
     return function(config) {
-        var io = require('stack.io')(),
-            appService = null, accessToken = null, appKey;
+        var appService = null, accessToken = null, appKey;
         var transfer = function(name, args, noauth) {
             if (!appService) throw 'Twitter service was not initialized.';
             args = Array.prototype.slice.call(args);

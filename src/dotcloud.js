@@ -14,6 +14,7 @@ define(function(require) {
     var self = {};
 
     var config = require('config');
+    var io = require('stack.io')();
 
     function ready() {
         var i = readyCb.length;
@@ -48,19 +49,21 @@ define(function(require) {
     // The dotcloud object is a namespace to several submodules loaded dynamically.  
     // Each submodule is documented on its own page.
     config.ready(function(config) {
+
+
         if (config.modules.DB_ENABLED) {
             // * [dotcloud.db](db.html) &mdash; Simple storage API
-            self.db = require('db')(config);
+            self.db = require('db')(config, io);
         }
 
         if (config.modules.SYNC_ENABLED) {
             // * [dotcloud.sync](sync.html) &mdash; Synchronized storage API
-            self.sync = require('sync')(config);
+            self.sync = require('sync')(config, io);
         }
 
         if (config.modules.TWITTER_ENABLED) {
             // * [dotcloud.twitter](twitter.html) &mdash; Twitter APIs
-            self.twitter = require('twitter')(config);
+            self.twitter = require('twitter')(config, io);
         }
 
         ready();

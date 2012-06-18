@@ -53,11 +53,7 @@ define(function(require) {
 
     // This module is initialized by passing the config object which is a dependency 
     // of the *dotcloud* module.
-    return function(config) {
-        // *stack.io* is a transport library based on socket.io which propagates events
-        // across multiple clients and back-end services. It also has an RPC layer which
-        // this submodule uses extensively.
-        var io = require("stack.io")();
+    return function(config, io) {
 
         // `dotcloud.sync` object.
         var sync = {
