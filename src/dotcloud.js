@@ -63,6 +63,11 @@ define(function(require) {
             self.twitter = require('twitter')(config);
         }
 
+        if (config.modules.TWILIO_ENABLED) {
+            // * [dotcloud.twilio](twilio.html) &mdash; Twilio APIs
+            self.twilio = require('twilio')(config);
+        }
+
         ready();
         isReady = true;
     });
