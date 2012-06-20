@@ -13,8 +13,7 @@
 // an `error` field if something occured server-side and a `result` field
 // containing the data returned by the query, if any.
 define(function(require) {
-    return function(config) {
-        var io = require('stack.io')();
+    return function(config, io) {
         var db = {
             // `db.insert(collection, obj|objArray, [cb])`  
             // Insert one or several objects in `collection`.  

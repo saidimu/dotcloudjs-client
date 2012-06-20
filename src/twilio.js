@@ -10,8 +10,7 @@
 // *Sub-module providing the simple bindings with Twilio's REST API.*  
 // 
 define(function(require) {
-    return function(config) {
-        var io = require('stack.io')();
+    return function(config, io) {
         var twilio = {
             // `twilio.init(crendentials, cb)`  
             // does nothing
