@@ -68,7 +68,7 @@ define(function(require) {
 
         if (config.modules.TWILIO_ENABLED) {
             // * [dotcloud.twilio](twilio.html) &mdash; Twilio APIs
-            self.twilio = require('twilio')(config);
+            self.twilio = require('twilio')(config, io);
         }
 
         ready();
