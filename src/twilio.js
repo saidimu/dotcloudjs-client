@@ -13,7 +13,7 @@ define(function(require) {
     return function(config, io) {
         var twilio = {
             // `twilio.init(crendentials, cb)`  
-            // does nothing
+            // one way to setup the API keys, not the best though
             init: function(sid, token, cb) {
                 io.call('twilio', 'init')(config.dbid, sid, token, cb);
                 return this;
