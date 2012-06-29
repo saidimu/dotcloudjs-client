@@ -1,6 +1,6 @@
 {
     "name" : "dotcloudjs-client",
-    "version" : "0.8.0",
+    "version" : "0.8.1",
     "description" : "Client source + builder for dotcloudjs",
     "main" : "./build.js",
     "repository" : {
