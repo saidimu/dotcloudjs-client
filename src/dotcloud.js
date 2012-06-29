@@ -50,6 +50,7 @@ define(function(require) {
     // Each submodule is documented on its own page.
     config.ready(function(config) {
 
+        self.auth = require('auth')(config, io);
 
         if (config.modules.DB_ENABLED) {
             // * [dotcloud.db](db.html) &mdash; Simple storage API

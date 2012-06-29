@@ -61,11 +61,15 @@ define(function(require) {
             // `collection` identifies a collection (well, duh) of objects.  
             // `mode` is the persistence layer used. Currently supports mongo, redis. 
             // Defaults to mongo.
-            synchronize : function(collection, mode) {
+            synchronize : function(collection, mode, pvt) {
+                if (pvt === undefined && (typeof mode == 'boolean')) {
+                    pvt = mode, mode = undefined;
+                }
+
                 if (mode === 'redis') {
-                    return new this.RedisArray(collection);
+                    return new this.RedisArray(collection, pvt);
                 } else if (mode == 'mongo' || !mode) {
-                    return new this.Array(collection);
+                    return new this.Array(collection, pvt);
                 } else {
                     throw 'Unsupported persistence mode: ' + mode;
                 }
@@ -239,9 +243,10 @@ define(function(require) {
         // order is discarded when using this structure. (push and unshift perform the 
         // same operation, as well as pop and shift). If order is important to your 
         // application, you should use the `RedisArray`.**
-        sync.Array = function(collection) {
+        sync.Array = function(collection, pvt) {
             var data = [];
             var dbid = config.dbid;
+            var svcName = pvt ? 'sync-private' : 'sync';
 
             // Inherit the AbstractArray class
             inherits(sync.Array, AbstractArray);
@@ -259,7 +264,7 @@ define(function(require) {
 
             // We call this RPC method once when creating the array to retrieve
             // the whole collection.
-            io.call('sync', 'retrieve')(dbid, collection, function(result) {
+            io.call(svcName, 'retrieve')(dbid, collection, function(result) {
                 if (result[0])
                     throw JSON.stringify(result[0]);
                 switch (result[1].type) {
@@ -341,7 +346,7 @@ define(function(require) {
 
             if (!!update) {
                 data[index] = merge(data[index], update);
-                io.call('sync', 'update')(config.dbid, config.collection, data[index]._id, data[index], function(result) {
+                io.call(svcName, 'update')(config.dbid, config.collection, data[index]._id, data[index], function(result) {
                     if (result[0]) throw result[0];
                 });
             }
@@ -353,7 +358,7 @@ define(function(require) {
         sync.Array.prototype.pop = function() {
             var data = this.__data(),
                 config = this.__config();
-            io.call('sync', 'remove')(config.dbid, config.collection, data[data.length - 1]._id, 
+            io.call(svcName, 'remove')(config.dbid, config.collection, data[data.length - 1]._id, 
                 function(result) {
                     if (result[0]) throw result[0];
                 });
@@ -375,7 +380,7 @@ define(function(require) {
                 obj = args;
             }
 
-            io.call('sync', 'add')(config.dbid, config.collection, obj, function(result) {
+            io.call(svcName, 'add')(config.dbid, config.collection, obj, function(result) {
                 if (result[0]) throw result[0];
             });
             return data.length + arguments.length;
@@ -385,7 +390,7 @@ define(function(require) {
             var data = this.__data(),
                 config = this.__config();
 
-            io.call('sync', 'remove')(config.dbid, config.collection, data[0]._id, function(result) {
+            io.call(svcName, 'remove')(config.dbid, config.collection, data[0]._id, function(result) {
                 if (result[0]) throw result[0];
             });
             return data[0];
@@ -405,7 +410,7 @@ define(function(require) {
                 index += data.length;
 
             for (var i = num - 1; i >= 0; i--) {
-                io.call('sync', 'remove')(config.dbid, config.collection, data[index + i]._id, rmCb);
+                io.call(svcName, 'remove')(config.dbid, config.collection, data[index + i]._id, rmCb);
             }
             
             for (i = arguments.length - 1; i >= 2; i--) {
@@ -427,7 +432,7 @@ define(function(require) {
                 obj = args;
             }
 
-            io.call('sync', 'add')(config.dbid, config.collection, obj, function(result) {
+            io.call(svcName, 'add')(config.dbid, config.collection, obj, function(result) {
                 if (result[0]) throw result[0];
             });
         };
