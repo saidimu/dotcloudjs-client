@@ -258,13 +258,14 @@ define(function(require) {
             this.__config = function() {
                 return {
                     dbid: dbid,
-                    collection: collection
+                    collection: collection,
+                    svcName: svcName
                 };
             };
 
             // We call this RPC method once when creating the array to retrieve
             // the whole collection.
-            io.call(svcName, 'retrieve')(dbid, collection, function(result) {
+            io.call(this.__config().svcName, 'retrieve')(dbid, collection, function(result) {
                 if (result[0])
                     throw JSON.stringify(result[0]);
                 switch (result[1].type) {
@@ -346,7 +347,7 @@ define(function(require) {
 
             if (!!update) {
                 data[index] = merge(data[index], update);
-                io.call(svcName, 'update')(config.dbid, config.collection, data[index]._id, data[index], function(result) {
+                io.call(this.__config().svcName, 'update')(config.dbid, config.collection, data[index]._id, data[index], function(result) {
                     if (result[0]) throw result[0];
                 });
             }
@@ -358,7 +359,7 @@ define(function(require) {
         sync.Array.prototype.pop = function() {
             var data = this.__data(),
                 config = this.__config();
-            io.call(svcName, 'remove')(config.dbid, config.collection, data[data.length - 1]._id, 
+            io.call(this.__config().svcName, 'remove')(config.dbid, config.collection, data[data.length - 1]._id, 
                 function(result) {
                     if (result[0]) throw result[0];
                 });
@@ -380,7 +381,7 @@ define(function(require) {
                 obj = args;
             }
 
-            io.call(svcName, 'add')(config.dbid, config.collection, obj, function(result) {
+            io.call(this.__config().svcName, 'add')(config.dbid, config.collection, obj, function(result) {
                 if (result[0]) throw result[0];
             });
             return data.length + arguments.length;
@@ -390,7 +391,7 @@ define(function(require) {
             var data = this.__data(),
                 config = this.__config();
 
-            io.call(svcName, 'remove')(config.dbid, config.collection, data[0]._id, function(result) {
+            io.call(this.__config().svcName, 'remove')(config.dbid, config.collection, data[0]._id, function(result) {
                 if (result[0]) throw result[0];
             });
             return data[0];
@@ -410,7 +411,7 @@ define(function(require) {
                 index += data.length;
 
             for (var i = num - 1; i >= 0; i--) {
-                io.call(svcName, 'remove')(config.dbid, config.collection, data[index + i]._id, rmCb);
+                io.call(this.__config().svcName, 'remove')(config.dbid, config.collection, data[index + i]._id, rmCb);
             }
             
             for (i = arguments.length - 1; i >= 2; i--) {
@@ -432,7 +433,7 @@ define(function(require) {
                 obj = args;
             }
 
-            io.call(svcName, 'add')(config.dbid, config.collection, obj, function(result) {
+            io.call(this.__config().svcName, 'add')(config.dbid, config.collection, obj, function(result) {
                 if (result[0]) throw result[0];
             });
         };
