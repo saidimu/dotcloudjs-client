@@ -35,6 +35,12 @@ define(['jquery', 'jq-cookie'], function($) {
     $.post(result.host + '/rpc/newdb', {
         stackid: result.stackid
     }, function(data) {
+        // In Firefox, returned data is not parsed automatically while it is
+        // in Webkit-based browsers.
+        // Did I mention I love browser environments?
+        if (data.constructor == String) {
+            data = JSON.parse(data);
+        }
         if (data.error) throw data.error;
         if (!data.result || !data.result.id)
             throw 'Backend didn\'t respond with a DB id';
